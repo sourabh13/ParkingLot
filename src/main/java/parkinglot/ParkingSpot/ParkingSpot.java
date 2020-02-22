@@ -27,6 +27,10 @@ public abstract class ParkingSpot {
         return this.vehicle;
     }
 
+    public ParkingSpotType getType() {
+        return this.type;
+    }
+
     public void assignVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
         this.isFree = false;

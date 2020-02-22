@@ -23,4 +23,8 @@ public abstract class Vehicle {
     public String getColour() {
         return this.colour;
     }
+
+    public VehicleType getVehicleType() {
+        return this.vehicleType;
+    }
 }

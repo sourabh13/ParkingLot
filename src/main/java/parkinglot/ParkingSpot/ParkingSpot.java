@@ -7,19 +7,19 @@ public abstract class ParkingSpot {
 
     private final ParkingSpotType type;
 
-    private String number;
+    private Integer number;
 
     private Vehicle vehicle;
 
     private Boolean isFree;
 
-    public ParkingSpot(ParkingSpotType type, String number) {
+    public ParkingSpot(ParkingSpotType type, Integer number) {
         this.type = type;
         this.number = number;
         this.isFree = true;
     }
 
-    public String getNumber() {
+    public Integer getNumber() {
         return this.number;
     }
 

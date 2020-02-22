@@ -4,7 +4,7 @@ import parkinglot.Enums.ParkingSpotType;
 
 public class LargeParkingSpot extends ParkingSpot {
 
-    public LargeParkingSpot(String number) {
+    public LargeParkingSpot(Integer number) {
         super(ParkingSpotType.LARGE, number);
     }
 

@@ -91,4 +91,14 @@ public class ParkingLot {
 
         return parkingFloors.get(floor-1).getSlotNumberForVehicle(regNumber);
     }
+
+    public List<ParkingSpot> status(int floor) {
+
+        if(floor > numberOfFloors) {
+            System.out.println("Invalid floor {" + floor + "} provided.");
+            return new ArrayList<>();
+        }
+
+        return parkingFloors.get(floor-1).getAllOccupiedParkingSpots();
+    }
 }

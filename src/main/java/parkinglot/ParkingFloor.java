@@ -1,6 +1,7 @@
 package parkinglot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -80,6 +81,15 @@ public class ParkingFloor {
         return null;
     }
 
+    public List<ParkingSpot> getAllOccupiedParkingSpots() {
+
+        List<ParkingSpot> parkingSpots = getOccupiedParkingSpotsForAllTypes();
+
+        return parkingSpots.stream()
+                .sorted(Comparator.comparingInt(ParkingSpot::getNumber))
+                .collect(Collectors.toList());
+    }
+
     private ParkingSlotStrategy getParkingSlotStrategy(ParkingSpotType parkingSpotType) {
 
         if(isValidParkingSpotType(parkingSpotType)) {
@@ -105,7 +115,7 @@ public class ParkingFloor {
 
     public List<String> getAllRegNumbersOfColour(String colour) {
 
-        List<ParkingSpot> parkingSpots =  new ArrayList<>(largeParkingSpots.values());
+        List<ParkingSpot> parkingSpots = getOccupiedParkingSpotsForAllTypes();
 
         return parkingSpots
                 .stream()
@@ -116,7 +126,7 @@ public class ParkingFloor {
 
     public Integer getSlotNumberForVehicle(String regNumber) {
 
-        List<ParkingSpot> parkingSpots =  new ArrayList<>(largeParkingSpots.values());
+        List<ParkingSpot> parkingSpots =  getOccupiedParkingSpotsForAllTypes();
 
         Optional<ParkingSpot> requiredParkingSpot = parkingSpots.stream()
                 .filter(parkingSpot -> parkingSpot.getVehicle().getRegNumber().equals(regNumber))
@@ -131,13 +141,26 @@ public class ParkingFloor {
 
     public List<Integer> getAllSlotNumbersOfColor(String colour) {
 
-        List<ParkingSpot> parkingSpots =  new ArrayList<>(largeParkingSpots.values());
+        List<ParkingSpot> parkingSpots =  getOccupiedParkingSpotsForAllTypes();
 
         return parkingSpots
                 .stream()
                 .filter(parkingSpot -> parkingSpot.getVehicle().getColour().equals(colour))
                 .map(ParkingSpot::getNumber)
                 .collect(Collectors.toList());
+    }
+
+    private List<ParkingSpot> getOccupiedParkingSpotsForAllTypes() {
+
+        List<ParkingSpot> result = new ArrayList<>();
+        for (ParkingSpotType parkingSpotType : ParkingSpotType.values()) {
+            HashMap<Integer, ParkingSpot> parkingSpotsMap = getParkingSpots(parkingSpotType);
+            List<ParkingSpot> parkingSpots = new ArrayList<>(parkingSpotsMap.values());
+            result.addAll(parkingSpots.stream()
+                    .filter(parkingSpot -> parkingSpot.getVehicle() != null)
+                    .collect(Collectors.toList()));
+        }
+        return result;
     }
 
     private ParkingSpot freeParkingSpot(Integer number, ParkingSlotStrategy parkingSlotStrategy,

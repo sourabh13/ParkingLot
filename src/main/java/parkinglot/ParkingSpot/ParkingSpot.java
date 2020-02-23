@@ -17,6 +17,7 @@ public abstract class ParkingSpot {
         this.type = type;
         this.number = number;
         this.isFree = true;
+        this.vehicle = null;
     }
 
     public Integer getNumber() {

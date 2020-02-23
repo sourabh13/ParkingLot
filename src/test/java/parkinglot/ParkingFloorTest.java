@@ -54,7 +54,7 @@ public class ParkingFloorTest {
     @Test
     public void getAllRegNumbersOfColourTest() {
 
-        ParkingFloor parkingFloor = createSampleParkingFloorFourSize();
+        ParkingFloor parkingFloor = createSampleParkingFloor(4);
 
         List<String> allRegsOfColor = parkingFloor.getAllRegNumbersOfColour("White");
 
@@ -68,7 +68,7 @@ public class ParkingFloorTest {
     @Test
     public void getAllSlotsOfColorTest() {
 
-        ParkingFloor parkingFloor = createSampleParkingFloorFourSize();
+        ParkingFloor parkingFloor = createSampleParkingFloor(4);
 
         List<Integer> allSlotNumbersOfColor = parkingFloor.getAllSlotNumbersOfColor("White");
 
@@ -83,7 +83,7 @@ public class ParkingFloorTest {
     @Test
     public void getSlotNumberForVehiclePresentTest() {
 
-        ParkingFloor parkingFloor = createSampleParkingFloorFourSize();
+        ParkingFloor parkingFloor = createSampleParkingFloor(4);
         Integer slotNumber = parkingFloor.getSlotNumberForVehicle("ABCD-MNOP");
 
         assertNotNull(slotNumber);
@@ -93,16 +93,30 @@ public class ParkingFloorTest {
     @Test
     public void getSlotNumberForVehicleAbsentTest() {
 
-        ParkingFloor parkingFloor = createSampleParkingFloorFourSize();
+        ParkingFloor parkingFloor = createSampleParkingFloor(4);
         Integer slotNumber = parkingFloor.getSlotNumberForVehicle("XXXX-XXXX");
 
         assertNull(slotNumber);
     }
 
+    @Test
+    public void getAllOccupiedParkingSpotsTest() {
 
-    private ParkingFloor createSampleParkingFloorFourSize() {
+        ParkingFloor parkingFloor = createSampleParkingFloor(8);
+        List<ParkingSpot> occupiedParkingSpots = parkingFloor.getAllOccupiedParkingSpots();
 
-        ParkingFloor parkingFloor = new ParkingFloor(1, 4);
+        assertNotNull(occupiedParkingSpots);
+        assertEquals(4, occupiedParkingSpots.size());
+        assertEquals("ABCD-EFGH", occupiedParkingSpots.get(0).getVehicle().getRegNumber());
+        assertEquals("IJKL-MNOP", occupiedParkingSpots.get(1).getVehicle().getRegNumber());
+        assertEquals("ABCD-MNOP", occupiedParkingSpots.get(2).getVehicle().getRegNumber());
+        assertEquals("IJKL-EFGH", occupiedParkingSpots.get(3).getVehicle().getRegNumber());
+    }
+
+
+    private ParkingFloor createSampleParkingFloor(int size) {
+
+        ParkingFloor parkingFloor = new ParkingFloor(1, size);
         parkingFloor.addParkingSpot(new LargeParkingSpot(1));
         parkingFloor.addParkingSpot(new LargeParkingSpot(2));
         parkingFloor.addParkingSpot(new LargeParkingSpot(3));
@@ -115,6 +129,4 @@ public class ParkingFloorTest {
 
         return parkingFloor;
     }
-
-
 }

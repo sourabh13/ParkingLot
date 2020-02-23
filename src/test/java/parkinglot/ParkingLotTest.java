@@ -19,14 +19,14 @@ public class ParkingLotTest {
 
     @Test
     public void parkVehicleBad() {
-        Integer result = parkingLot.parkVehicle(2, new Car("ABCD-EFGH", "White"));
+        Integer result = parkingLot.parkVehicle(2, "ABCD-EFGH", "White");
 
         assertEquals(-1, result.intValue());
     }
 
     @Test
     public void leaveBad() {
-        Integer result = parkingLot.leave(2, 2);
+        Integer result = parkingLot.leave(2, "2");
 
         assertEquals(-1, result.intValue());
     }

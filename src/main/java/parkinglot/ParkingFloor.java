@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import parkinglot.Enums.ParkingSpotType;
 import parkinglot.Enums.VehicleType;
+import parkinglot.ParkingSpot.LargeParkingSpot;
 import parkinglot.ParkingSpot.ParkingSpot;
 import parkinglot.Strategy.LeastSlotNumberAvailableStrategy;
 import parkinglot.Strategy.ParkingSlotStrategy;
@@ -31,10 +32,19 @@ public class ParkingFloor {
         this.maxSize = maxSize;
         largeParkingSpots = new HashMap<>();
         largeParkingSlotStrategy = new LeastSlotNumberAvailableStrategy();
+        for(int i = 1; i <= maxSize; ++i) {
+            largeParkingSlotStrategy.addSlot(i);
+            largeParkingSpots.put(i, new LargeParkingSpot(i));
+        }
+
     }
 
     public int getId() {
         return this.id;
+    }
+
+    public int getMaxSize() {
+        return this.maxSize;
     }
 
     public Boolean addParkingSpot(ParkingSpot parkingSpot) {
@@ -133,7 +143,6 @@ public class ParkingFloor {
                 .findAny();
 
         if(!requiredParkingSpot.isPresent()) {
-            System.out.println("Vehicle with registration number {" + regNumber + "} not present.");
             return null;
         }
         return requiredParkingSpot.get().getNumber();
@@ -141,7 +150,7 @@ public class ParkingFloor {
 
     public List<Integer> getAllSlotNumbersOfColor(String colour) {
 
-        List<ParkingSpot> parkingSpots =  getOccupiedParkingSpotsForAllTypes();
+        List<ParkingSpot> parkingSpots = getOccupiedParkingSpotsForAllTypes();
 
         return parkingSpots
                 .stream()
@@ -171,7 +180,7 @@ public class ParkingFloor {
             return null;
         }
         ParkingSpot parkingSpot = parkingSpots.get(number);
-        parkingSpots.remove(number);
+        parkingSpot.removeVehicle();
         parkingSlotStrategy.addSlot(number);
         return parkingSpot;
     }

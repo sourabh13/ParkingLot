@@ -64,6 +64,10 @@ public class ParkingFloor {
         return availableParkingSpot;
     }
 
+    public ParkingSpot leave(Integer number) {
+        return leave(number, ParkingSpotType.LARGE);
+    }
+
     public ParkingSpot leave(Integer number, ParkingSpotType parkingSpotType) {
 
         if(isValidParkingSpotType(parkingSpotType)) {

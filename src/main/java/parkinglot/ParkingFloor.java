@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 import parkinglot.Enums.ParkingSpotType;
 import parkinglot.Enums.VehicleType;
 import parkinglot.ParkingSpot.ParkingSpot;
+import parkinglot.Strategy.LeastSlotNumberAvailableStrategy;
+import parkinglot.Strategy.ParkingSlotStrategy;
 import parkinglot.Vehicles.Vehicle;
 
 public class ParkingFloor {
@@ -21,13 +23,13 @@ public class ParkingFloor {
 
     private HashMap<Integer, ParkingSpot> largeParkingSpots;
 
-    private TreeSet<Integer> availableLargeParkingSpots;
+    private ParkingSlotStrategy largeParkingSlotStrategy;
 
     public ParkingFloor(int id, int maxSize) {
         this.id = id;
         this.maxSize = maxSize;
         largeParkingSpots = new HashMap<>();
-        availableLargeParkingSpots = new TreeSet<>();
+        largeParkingSlotStrategy = new LeastSlotNumberAvailableStrategy();
     }
 
     public int getId() {
@@ -40,7 +42,7 @@ public class ParkingFloor {
         switch (parkingSpot.getType()) {
             case LARGE:
                 largeParkingSpots.put(parkingSpot.getNumber(), parkingSpot);
-                availableLargeParkingSpots.add(parkingSpot.getNumber());
+                largeParkingSlotStrategy.addSlot(parkingSpot.getNumber());
                 successful = true;
                 break ;
             default:
@@ -57,7 +59,7 @@ public class ParkingFloor {
             availableParkingSpot = getAvailableParkingSpot(parkingSpotType);
             if(availableParkingSpot != null) {
                 assignVehicleToParkingSpot(vehicle, availableParkingSpot,
-                        getSetOfAvailableParkingSpots(parkingSpotType),
+                        getParkingSlotStrategy(parkingSpotType),
                         getParkingSpots(parkingSpotType));
             }
         }
@@ -71,22 +73,23 @@ public class ParkingFloor {
     public ParkingSpot leave(Integer number, ParkingSpotType parkingSpotType) {
 
         if(isValidParkingSpotType(parkingSpotType)) {
-            return freeParkingSpot(number, getSetOfAvailableParkingSpots(parkingSpotType),
+            return freeParkingSpot(number, getParkingSlotStrategy(parkingSpotType),
                     getParkingSpots(parkingSpotType));
         }
         System.out.println("Invalid parking spot type provided.");
         return null;
     }
 
-    private TreeSet<Integer> getSetOfAvailableParkingSpots(ParkingSpotType parkingSpotType) {
+    private ParkingSlotStrategy getParkingSlotStrategy(ParkingSpotType parkingSpotType) {
 
         if(isValidParkingSpotType(parkingSpotType)) {
             switch (parkingSpotType) {
                 case LARGE:
-                    return availableLargeParkingSpots;
+                    return largeParkingSlotStrategy;
             }
         }
-        return new TreeSet<>();
+
+        return null;
     }
 
     private HashMap<Integer, ParkingSpot> getParkingSpots(ParkingSpotType parkingSpotType) {
@@ -137,7 +140,7 @@ public class ParkingFloor {
                 .collect(Collectors.toList());
     }
 
-    private ParkingSpot freeParkingSpot(Integer number, TreeSet<Integer> availableParkingSpots,
+    private ParkingSpot freeParkingSpot(Integer number, ParkingSlotStrategy parkingSlotStrategy,
             HashMap<Integer, ParkingSpot> parkingSpots) {
 
         if(!parkingSpots.containsKey(number)) {
@@ -146,15 +149,15 @@ public class ParkingFloor {
         }
         ParkingSpot parkingSpot = parkingSpots.get(number);
         parkingSpots.remove(number);
-        availableParkingSpots.add(number);
+        parkingSlotStrategy.addSlot(number);
         return parkingSpot;
     }
 
     private void assignVehicleToParkingSpot(Vehicle vehicle, ParkingSpot parkingSpot,
-            TreeSet<Integer> availableParkingSpots,
+            ParkingSlotStrategy parkingSlotStrategy,
             HashMap<Integer, ParkingSpot> parkingSpots) {
 
-        availableParkingSpots.remove(parkingSpot.getNumber());
+        parkingSlotStrategy.useSlot(parkingSpot.getNumber());
         parkingSpots.get(parkingSpot.getNumber()).assignVehicle(vehicle);
     }
 
@@ -191,7 +194,7 @@ public class ParkingFloor {
         ParkingSpot parkingSpot = null;
         switch (parkingSpotType) {
             case LARGE:
-                parkingSpot = getAvailableParkingSpot(availableLargeParkingSpots, largeParkingSpots);
+                parkingSpot = getAvailableParkingSpot(largeParkingSlotStrategy, largeParkingSpots);
                 break;
             default:
                 System.out.println("Invalid parking spot type.");
@@ -199,16 +202,16 @@ public class ParkingFloor {
         return parkingSpot;
     }
 
-    private ParkingSpot getAvailableParkingSpot(TreeSet<Integer> availableParkingSpots,
+    private ParkingSpot getAvailableParkingSpot(ParkingSlotStrategy parkingSlotStrategy,
             HashMap<Integer, ParkingSpot> parkingSpots) {
 
-        if(availableParkingSpots.isEmpty()) {
+        if(!parkingSlotStrategy.available()) {
             return null;
         }
-        Integer firstAvailableParkingSpotNumber = availableParkingSpots.first();
-        availableParkingSpots.remove(firstAvailableParkingSpotNumber);
+        Integer parkingSpotNumber = parkingSlotStrategy.getSlot();
+        parkingSlotStrategy.useSlot(parkingSpotNumber);
 
-        return parkingSpots.get(firstAvailableParkingSpotNumber);
+        return parkingSpots.get(parkingSpotNumber);
     }
 
 }

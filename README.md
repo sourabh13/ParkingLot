@@ -12,7 +12,7 @@ Parking Lot(<a>Parking Lot v.1.4.2.pdf</a>)
 ## Usage
 #### 1. Build
 ```./bin/setup```
-#### 3. Run Program
+#### 2. Run Program
 - File input mode:
 ```./bin/parking_lot inputFile.txt```
 - Interactive mode:
